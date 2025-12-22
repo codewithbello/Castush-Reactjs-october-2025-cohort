@@ -6,7 +6,7 @@ const App = () => {
   const [showForm, setShowForm] = useState(false);
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
-  const [todoIndex, setTodoIndex] = useState('');
+  const [todoIndex, setTodoIndex] = useState("");
 
   const handleShowForm = () => {
     if (showForm === true) {
@@ -16,23 +16,44 @@ const App = () => {
     }
   };
 
-  const updateTodo = ()=>{
-    const search = todos.filter((item, index)=>index == todoIndex)
-    const currentTodo = search[0]
+  const updateTodo = () => {
+    const search = todos.filter((item, index) => index == todoIndex);
+    const currentTodo = search[0];
     // Change the todo value
-    currentTodo.todo = todo
-    setTodo("")
-    setTodoIndex("")
-
-  }
-  const handleEdit = (index)=>{
-    setTodoIndex(String(index))
+    currentTodo.todo = todo;
+    setTodo("");
+    setTodoIndex("");
+  };
+  const handleEdit = (index) => {
+    setTodoIndex(String(index));
     // console.log('Edit btn pressed')
-  }
+  };
 
   const handleTodoChange = (event) => {
     event.preventDefault;
     setTodo(event.target.value);
+  };
+
+  const handleIsComplete = (event, checkboxIndex) => {
+    event.preventDefault;
+    console.log("Iscomplete", event.target.value, checkboxIndex);
+    const search = todos.filter((item, index) => index == checkboxIndex);
+    console.log("handleIscomplete:search-before", search);
+    let currentTodo = search[0];
+    // Change the todo value
+
+    if (currentTodo.isComplete) {
+      currentTodo.isComplete = false;
+    } else {
+      currentTodo.isComplete = true;
+    }
+
+    console.log("handleIscomplete:search-after", currentTodo);
+
+    const remainingTodos = todos.filter(
+      (item, index) => index !== checkboxIndex
+    );
+    setTodos([currentTodo, ...remainingTodos]);
   };
 
   const handleAdd = () => {
@@ -50,17 +71,15 @@ const App = () => {
     }
   };
 
-
   // Side Effect hook that automatically fires each time the todoIndex changes
-  useEffect(()=>{
-  console.log('todoIndex changes')
-    if(todoIndex.length >0){
-      const search = todos.filter((item, index)=>index == todoIndex)
-      // console.log("Search", search)
-      setTodo(search[0].todo)
+  useEffect(() => {
+    console.log("todoIndex changes");
+    if (todoIndex.length > 0) {
+      const search = todos.filter((item, index) => index == todoIndex);
+      console.log("Search", search);
+      setTodo(search[0].todo);
     }
-
-  },[todoIndex])
+  }, [todoIndex, todos]);
 
   return (
     <div className="container">
@@ -79,11 +98,11 @@ const App = () => {
               onChange={(event) => handleTodoChange(event)}
             />
             <button
-              onClick=  {todoIndex.length>0 ? updateTodo:  handleAdd}
+              onClick={todoIndex.length > 0 ? updateTodo : handleAdd}
               className="btn"
               style={{ width: "100px" }}
             >
-             {todoIndex.length>0 ?'Update':  'Add'}
+              {todoIndex.length > 0 ? "Update" : "Add"}
             </button>
           </div>
         )}
@@ -98,16 +117,30 @@ const App = () => {
                   <input
                     type="checkbox"
                     name="isComplete"
+                    checked={item.isComplete ? true : false}
                     value={item.isComplete}
+                    onChange={(event) => handleIsComplete(event, index)}
                   ></input>
 
                   <div className="todo-details">
-                    <p>{item.todo}</p>
-                    <p style={{color:"gray"}}>{item.timeStamp.toLocaleTimeString()}</p>
+                    <p
+                      style={{
+                        textDecoration: item.isComplete
+                          ? "line-through"
+                          : "none",
+                      }}
+                    >
+                      {item.todo}
+                    </p>
+                    <p style={{ color: "gray" }}>
+                      {item.timeStamp.toLocaleTimeString()}
+                    </p>
                   </div>
                 </div>
                 <div className="todo-action-btns">
-                  <button className="btn" onClick={()=>handleEdit(index)}>Edit</button>
+                  <button className="btn" onClick={() => handleEdit(index)}>
+                    Edit
+                  </button>
                   <button className="btn delete-btn">Delete</button>
                 </div>
               </div>
