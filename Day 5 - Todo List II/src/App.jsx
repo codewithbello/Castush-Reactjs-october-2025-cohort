@@ -1,0 +1,124 @@
+import React, { useState, useEffect } from "react";
+import Header from "./components/Header";
+
+// aistudio.google.com/live
+const App = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [todo, setTodo] = useState("");
+  const [todos, setTodos] = useState([]);
+  const [todoIndex, setTodoIndex] = useState('');
+
+  const handleShowForm = () => {
+    if (showForm === true) {
+      setShowForm(false);
+    } else {
+      setShowForm(true);
+    }
+  };
+
+  const updateTodo = ()=>{
+    const search = todos.filter((item, index)=>index == todoIndex)
+    const currentTodo = search[0]
+    // Change the todo value
+    currentTodo.todo = todo
+    setTodo("")
+    setTodoIndex("")
+
+  }
+  const handleEdit = (index)=>{
+    setTodoIndex(String(index))
+    // console.log('Edit btn pressed')
+  }
+
+  const handleTodoChange = (event) => {
+    event.preventDefault;
+    setTodo(event.target.value);
+  };
+
+  const handleAdd = () => {
+    // console.log("Before", todos);
+    if (todo) {
+      const newTodo = {
+        todo: todo,
+        isComplete: false,
+        timeStamp: new Date(),
+      };
+
+      setTodos([newTodo, ...todos]);
+      // console.log("After", todos);
+      setTodo("");
+    }
+  };
+
+
+  // Side Effect hook that automatically fires each time the todoIndex changes
+  useEffect(()=>{
+  console.log('todoIndex changes')
+    if(todoIndex.length >0){
+      const search = todos.filter((item, index)=>index == todoIndex)
+      // console.log("Search", search)
+      setTodo(search[0].todo)
+    }
+
+  },[todoIndex])
+
+  return (
+    <div className="container">
+      <main style={{ width: "50%" }}>
+        {/* Header Section */}
+        <Header handleShowForm={handleShowForm} />
+        {/* Form*/}
+
+        {showForm && (
+          <div className="form">
+            <input
+              className="form_input"
+              type="text"
+              value={todo}
+              placeholder="enter new task e.g., coding"
+              onChange={(event) => handleTodoChange(event)}
+            />
+            <button
+              onClick=  {todoIndex.length>0 ? updateTodo:  handleAdd}
+              className="btn"
+              style={{ width: "100px" }}
+            >
+             {todoIndex.length>0 ?'Update':  'Add'}
+            </button>
+          </div>
+        )}
+
+        {/* Todos */}
+
+        {todos.length > 0 && (
+          <div>
+            {todos.map((item, index) => (
+              <div key={index} className="todo">
+                <div className="todo-detail-container">
+                  <input
+                    type="checkbox"
+                    name="isComplete"
+                    value={item.isComplete}
+                  ></input>
+
+                  <div className="todo-details">
+                    <p>{item.todo}</p>
+                    <p style={{color:"gray"}}>{item.timeStamp.toLocaleTimeString()}</p>
+                  </div>
+                </div>
+                <div className="todo-action-btns">
+                  <button className="btn" onClick={()=>handleEdit(index)}>Edit</button>
+                  <button className="btn delete-btn">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {todos.length == 0 && <p>No todo</p>}
+      </main>
+    </div>
+  );
+};
+
+export default App;
