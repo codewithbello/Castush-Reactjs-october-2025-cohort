@@ -1,0 +1,32 @@
+https://stackoverflow.com/questions/53332321/react-hook-warnings-for-async-function-in-useeffect-useeffect-function-must-ret
+
+
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+const documentIdToUpdate = "your_document_id"; // Replace with the actual document ID
+const collectionName = "your_collection_name"; // Replace with your collection name
+
+const docRefToUpdate = doc(db, collectionName, documentIdToUpdate);
+
+try {
+  await updateDoc(docRefToUpdate, {
+    fieldToUpdate1: "new value 1",
+    fieldToUpdate2: "new value 2",
+    // Add more fields and their new values as needed
+  });
+  console.log("Document successfully updated!");
+} catch (error) {
+  console.error("Error updating document: ", error);
+}
+
+
+const documentIdToDelete = "your_document_id"; // Replace with the actual document ID
+const collectionName = "your_collection_name"; // Replace with your collection name
+
+const docRefToDelete = doc(db, collectionName, documentIdToDelete);
+
+try {
+  await deleteDoc(docRefToDelete);
+  console.log("Document successfully deleted!");
+} catch (error) {
+  console.error("Error deleting document: ", error);
+}
